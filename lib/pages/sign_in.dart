@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SignIn extends StatelessWidget {
-  final String pageText = "hello jamie boiiii";
+  final String pageText = "hello jamie boiiii, ok";
 
   // SignIn(this.pageText);
 
