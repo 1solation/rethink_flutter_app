@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class SignIn extends StatelessWidget {
-  final String pageText = "hello jamie boiiii";
+class OtherPage extends StatelessWidget {
+  final String pageText;
 
-  // SignIn(this.pageText);
+  OtherPage(this.pageText);
 
   @override
   Widget build(BuildContext context) {
