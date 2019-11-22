@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "420565774279",
+    "firebase_url": "https://rethink-16f07.firebaseio.com",
+    "project_id": "rethink-16f07",
+    "storage_bucket": "rethink-16f07.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420565774279:android:6b98bbeec248dff3c1f3e2",
+        "android_client_info": {
+          "package_name": "com.example.rethink_flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420565774279-85e64pr9qpkf8cjkrt7fk5j2p097lmvm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOpt9VSTSc5ucA_jf4wFIhVNeuPwYlgjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420565774279-85e64pr9qpkf8cjkrt7fk5j2p097lmvm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
