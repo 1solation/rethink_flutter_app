@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rethink_flutter_app/pages/setup/sign_in.dart';
+import 'package:rethink_flutter_app/pages/setup/welcome.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
-      home: LoginPage(),
+      home: WelcomePage(),
     );
   }
 }
