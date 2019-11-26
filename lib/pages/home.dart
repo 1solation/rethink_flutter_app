@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rethink_flutter_app/pages/test_poll_list.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key, @required this.user}) : super(key: key);
@@ -12,49 +12,52 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+Widget _buildListItem(BuildContext, context, DocumentSnapshot document) {
+  return ListTile(
+    title: Row(
+      children: [
+        Expanded(
+            child: Text(
+          document['boardName'],
+          style: Theme.of(context).textTheme.headline,
+        )),
+        Container(
+          decoration: const BoxDecoration(
+            color: Color(0xffddddff),
+          ),
+          padding: const EdgeInsets.all(10.0),
+          child: Text(
+            document['boardName'].toString(),
+            style: Theme.of(context).textTheme.display1,
+          ),
+        ),
+      ],
+    ),
+    onTap: () {
+      print("Should increase votes here.");
+    },
+  );
+}
+
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Home ${widget.user.email}'),
-        ),
-        body: ListView(
-          children: <Widget>[
-            Card(
-              child: ListTile(
-                leading: FlutterLogo(size: 72.0),
-                title: Text('Boardroom 1'),
-                subtitle: Text('3 ACTIVE POLLS'),
-                isThreeLine: true,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PollListView(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Card(
-              child: ListTile(
-                leading: FlutterLogo(size: 72.0),
-                title: Text('Boardroom 2'),
-                subtitle: Text('1 ACTIVE POLL'),
-                isThreeLine: true,
-              ),
-            ),
-            Card(
-              child: ListTile(
-                leading: FlutterLogo(size: 72.0),
-                title: Text('Boardroom 3'),
-                subtitle: Text('1 ACTIVE POLL'),
-                isThreeLine: true,
-              ),
-            ),
-          ],
-        ));
+      appBar: AppBar(
+        title: Text('Home ${widget.user.email}'),
+      ),
+      body: StreamBuilder(
+          stream: Firestore.instance.collection('boardroom').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return const Text('Loading bitch');
+            return ListView.builder(
+              itemExtent: 80.0,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) => _buildListItem(
+                  BuildContext, context, snapshot.data.documents[index]),
+            );
+          }),
+    );
   }
 
   void navigateToTestPolls() {
