@@ -18,7 +18,7 @@ Widget _buildListItem(BuildContext, context, DocumentSnapshot document) {
       children: [
         Expanded(
             child: Text(
-          document['boardName'],
+          document.documentID,
           style: Theme.of(context).textTheme.headline,
         )),
         Container(
@@ -27,7 +27,7 @@ Widget _buildListItem(BuildContext, context, DocumentSnapshot document) {
           ),
           padding: const EdgeInsets.all(10.0),
           child: Text(
-            document['boardName'].toString(),
+            document['userType'].toString(),
             style: Theme.of(context).textTheme.display1,
           ),
         ),
@@ -47,9 +47,14 @@ class _HomeState extends State<Home> {
         title: Text('Home ${widget.user.email}'),
       ),
       body: StreamBuilder(
-          stream: Firestore.instance.collection('boardroom').snapshots(),
+          stream: Firestore.instance
+              .collection('users')
+              .document('${widget.user.uid}'.toString())
+              .collection('activeBoards')
+              .snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Text('Loading bitch');
+            if (!snapshot.hasData) return const Text('Loading....');
+            print(snapshot.data);
             return ListView.builder(
               itemExtent: 80.0,
               itemCount: snapshot.data.documents.length,
