@@ -12,30 +12,31 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-Widget _buildListItem(BuildContext, context, DocumentSnapshot document) {
-  return ListTile(
-    title: Row(
-      children: [
-        Expanded(
-            child: Text(
-          document.documentID,
-          style: Theme.of(context).textTheme.headline,
-        )),
-        Container(
-          decoration: const BoxDecoration(
-            color: Color(0xffddddff),
-          ),
-          padding: const EdgeInsets.all(10.0),
-          child: Text(
-            document['userType'].toString(),
-            style: Theme.of(context).textTheme.display1,
-          ),
-        ),
-      ],
-    ),
-    onTap: () {
-      print("Should increase votes here.");
-    },
+void navigateToTestPolls(BuildContext context) {
+  Navigator.push(
+      context, MaterialPageRoute(builder: (context) => PollListView()));
+}
+
+Widget _buildListItem(context, DocumentSnapshot snapshot, FirebaseUser user) {
+  return Card(
+      color: Color.fromRGBO(255, 155, 155, 1),
+      child: Column(
+          children: <Widget>[
+            ListTile(
+                leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
+                title: Text(snapshot.documentID, style: new TextStyle(color: Colors.white)),
+                subtitle: Text('subtitle placeholder', style: new TextStyle(color: Colors.white70)),
+                onTap: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Boardroom(user: user),
+                      )
+                  ); // Navigator.push
+                }
+            ),
+          ]
+      )
   );
 }
 
@@ -46,27 +47,63 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Home ${widget.user.email}'),
       ),
-      body: StreamBuilder(
-          stream: Firestore.instance
-              .collection('users')
-              .document('${widget.user.uid}'.toString())
-              .collection('activeBoards')
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) return const Text('Loading....');
-            print(snapshot.data);
-            return ListView.builder(
-              itemExtent: 80.0,
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) => _buildListItem(
-                  BuildContext, context, snapshot.data.documents[index]),
-            );
-          }),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: StreamBuilder(
+            stream: Firestore.instance.collection('users').document('${widget.user.uid}'.toString()).collection('activeBoards').snapshots(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (!snapshot.hasData)
+                return const Text('Loading....');
+
+              return ListView.builder(
+                itemExtent: 80.0,
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) => _buildListItem(context, snapshot.data.documents[index], widget.user),
+              );
+            }
+        )
+      )
     );
   }
+}
 
-  void navigateToTestPolls() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => PollListView()));
+class Boardroom extends StatefulWidget {
+  const Boardroom({Key key, @required this.user}) : super(key: key);
+
+  final FirebaseUser user;
+
+  @override
+  _BoardroomState createState() => _BoardroomState();
+}
+
+class _BoardroomState extends State<Boardroom> {
+  @override
+  Widget build(BuildContext context){
+    return _createStuff(context);
+  }
+
+  Scaffold _createStuff(BuildContext context){
+    return Scaffold(appBar: AppBar(
+      title: Text(widget.user.email),
+    ),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Card(
+          color: Color.fromRGBO(255, 155, 155, 1),
+          child: Column(
+              children: <Widget>[
+                ListTile(
+                    leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
+                    title: Text("soon", style: new TextStyle(color: Colors.white)),
+                    subtitle: Text('yeah', style: new TextStyle(color: Colors.white70)),
+                    onTap: (){
+                      Navigator.pop(context);
+                    }
+                ),
+              ]
+          )
+      ),
+      ),
+    );
   }
 }
