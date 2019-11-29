@@ -31,7 +31,7 @@ Widget _buildBoardroomList(context, DocumentSnapshot snapshot, FirebaseUser user
                       MaterialPageRoute(
                         builder: (context) => Boardroom(user: user, document: snapshot),
                       )
-                  ); // Navigator.push
+                  );
                 }
             ),
           ]
@@ -89,8 +89,6 @@ class _BoardroomState extends State<Boardroom> {
 
   Scaffold _createList(BuildContext context){
 
-    print('Stream Builder');
-
     return Scaffold(appBar: AppBar(
       title: Text(widget.document['boardName']),
     ),
@@ -102,8 +100,7 @@ class _BoardroomState extends State<Boardroom> {
             if(!snapshot.hasData){
               return Text("Loading...");
             } else {
-              print("else Has Data!");
-              print(snapshot.data.documents.length);
+              print("[DEBUG] Has Data, Length: "+snapshot.data.documents.length.toString());
             }
 
             return ListView.builder(
