@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rethink_flutter_app/pages/test_poll_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rethink_flutter_app/pages/poll_list.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key key, @required this.user}) : super(key: key);
-
+  // TODO: Global Styling Options
   final FirebaseUser user;
 
   @override
   _HomeState createState() => _HomeState();
 }
 
-void navigateToTestPolls(BuildContext context) {
-  Navigator.push(
-      context, MaterialPageRoute(builder: (context) => PollListView()));
-}
 
-Widget _buildListItem(context, DocumentSnapshot snapshot, FirebaseUser user) {
+Widget _buildBoardroomList(context, DocumentSnapshot snapshot, FirebaseUser user) {
+  //TODO: Dynamic Styling
+
   return Card(
-      color: Color.fromRGBO(255, 155, 155, 1),
+      color: Colors.pink,
       child: Column(
           children: <Widget>[
             ListTile(
                 leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
-                title: Text(snapshot.documentID, style: new TextStyle(color: Colors.white)),
-                subtitle: Text('subtitle placeholder', style: new TextStyle(color: Colors.white70)),
+                title: Text(snapshot["boardName"], style: new TextStyle(color: Colors.white)),
+                subtitle: Text(snapshot.documentID, style: new TextStyle(color: Colors.white70)),
                 onTap: (){
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Boardroom(user: user),
+                        builder: (context) => Boardroom(user: user, document: snapshot),
                       )
                   ); // Navigator.push
                 }
@@ -39,6 +38,8 @@ Widget _buildListItem(context, DocumentSnapshot snapshot, FirebaseUser user) {
       )
   );
 }
+
+
 
 class _HomeState extends State<Home> {
   @override
@@ -50,7 +51,7 @@ class _HomeState extends State<Home> {
       body: Container(
         padding: EdgeInsets.all(20.0),
         child: StreamBuilder(
-            stream: Firestore.instance.collection('users').document('${widget.user.uid}'.toString()).collection('activeBoards').snapshots(),
+            stream: Firestore.instance.collection('boardroom').where('members', arrayContains: widget.user.uid).snapshots(),
             builder: (context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData)
                 return const Text('Loading....');
@@ -58,7 +59,7 @@ class _HomeState extends State<Home> {
               return ListView.builder(
                 itemExtent: 80.0,
                 itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) => _buildListItem(context, snapshot.data.documents[index], widget.user),
+                itemBuilder: (context, index) => _buildBoardroomList(context, snapshot.data.documents[index], widget.user),
               );
             }
         )
@@ -68,42 +69,51 @@ class _HomeState extends State<Home> {
 }
 
 class Boardroom extends StatefulWidget {
-  const Boardroom({Key key, @required this.user}) : super(key: key);
+  const Boardroom({Key key, @required this.user, this.document}) : super(key: key);
 
   final FirebaseUser user;
+  final DocumentSnapshot document;
 
   @override
   _BoardroomState createState() => _BoardroomState();
 }
 
 class _BoardroomState extends State<Boardroom> {
+
+  //TODO: Redo theme related code to be dynamic, not hard-coded.
+
   @override
   Widget build(BuildContext context){
-    return _createStuff(context);
+    return _createList(context);
   }
 
-  Scaffold _createStuff(BuildContext context){
+  Scaffold _createList(BuildContext context){
+
+    print('Stream Builder');
+
     return Scaffold(appBar: AppBar(
-      title: Text(widget.user.email),
+      title: Text(widget.document['boardName']),
     ),
       body: Container(
         padding: EdgeInsets.all(20.0),
-        child: Card(
-          color: Color.fromRGBO(255, 155, 155, 1),
-          child: Column(
-              children: <Widget>[
-                ListTile(
-                    leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
-                    title: Text("soon", style: new TextStyle(color: Colors.white)),
-                    subtitle: Text('yeah', style: new TextStyle(color: Colors.white70)),
-                    onTap: (){
-                      Navigator.pop(context);
-                    }
-                ),
-              ]
-          )
+        child: StreamBuilder(
+          stream: Firestore.instance.collection('boardroom').document(widget.document.documentID).collection('polls').snapshots(),
+          builder: (context, AsyncSnapshot snapshot) {
+            if(!snapshot.hasData){
+              return Text("Loading...");
+            } else {
+              print("else Has Data!");
+              print(snapshot.data.documents.length);
+            }
+
+            return ListView.builder(
+              itemExtent: 80.0,
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (context, index) => buildPollList(context, snapshot.data.documents[index], widget.user),
+            );
+          },
       ),
-      ),
+      )
     );
   }
 }
