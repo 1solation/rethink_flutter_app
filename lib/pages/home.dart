@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rethink_flutter_app/pages/poll_list.dart';
-
+import 'package:rethink_flutter_app/pages/boardroom.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key, @required this.user}) : super(key: key);
@@ -12,7 +11,6 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
-
 
 Widget _buildBoardroomList(context, DocumentSnapshot snapshot, FirebaseUser user) {
   //TODO: Dynamic Styling
@@ -39,8 +37,6 @@ Widget _buildBoardroomList(context, DocumentSnapshot snapshot, FirebaseUser user
   );
 }
 
-
-
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
@@ -63,53 +59,6 @@ class _HomeState extends State<Home> {
               );
             }
         )
-      )
-    );
-  }
-}
-
-class Boardroom extends StatefulWidget {
-  const Boardroom({Key key, @required this.user, this.document}) : super(key: key);
-
-  final FirebaseUser user;
-  final DocumentSnapshot document;
-
-  @override
-  _BoardroomState createState() => _BoardroomState();
-}
-
-class _BoardroomState extends State<Boardroom> {
-
-  //TODO: Redo theme related code to be dynamic, not hard-coded.
-
-  @override
-  Widget build(BuildContext context){
-    return _createList(context);
-  }
-
-  Scaffold _createList(BuildContext context){
-
-    return Scaffold(appBar: AppBar(
-      title: Text(widget.document['boardName']),
-    ),
-      body: Container(
-        padding: EdgeInsets.all(20.0),
-        child: StreamBuilder(
-          stream: Firestore.instance.collection('boardroom').document(widget.document.documentID).collection('polls').snapshots(),
-          builder: (context, AsyncSnapshot snapshot) {
-            if(!snapshot.hasData){
-              return Text("Loading...");
-            } else {
-              print("[DEBUG] Has Data, Length: "+snapshot.data.documents.length.toString());
-            }
-
-            return ListView.builder(
-              itemExtent: 80.0,
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (context, index) => buildPollList(context, snapshot.data.documents[index], widget.user),
-            );
-          },
-      ),
       )
     );
   }
