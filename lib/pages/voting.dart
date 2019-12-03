@@ -114,8 +114,8 @@ class TabBarDemo extends StatelessWidget {
           appBar: AppBar(
             bottom: TabBar(
               tabs: [
-                Tab(icon: Icon(Icons.announcement)),
-                Tab(icon: Icon(Icons.add_comment)),
+                Tab(icon: Icon(Icons.assignment)),
+                Tab(icon: Icon(Icons.question_answer)),
               ],
             ),
             title: Text('Replace with poll.name'),
