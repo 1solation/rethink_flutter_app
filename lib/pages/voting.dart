@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 // final dummySnapshot = [
 //   {"pollDesc": "do 1", "voteCount": 15},
 //   {"pollDesc": "do 2", "voteCount": 14},
@@ -102,6 +102,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 //Demo of just the tabs, how they work.
 class TabBarDemo extends StatelessWidget {
+  const TabBarDemo({Key key, @required this.user, this.document, this.boardID})
+      : super(key: key);
+
+  final FirebaseUser user;
+  final DocumentSnapshot document;
+  final String boardID;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -123,11 +129,114 @@ class TabBarDemo extends StatelessWidget {
           body: TabBarView(
             children: [
               Icon(Icons.announcement),
-              Icon(Icons.add_comment),
+              Comments(user: user,document: document, boardID: boardID),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _CommentState extends State<Comments>{
+  String _comment;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(20.0),
+            child: StreamBuilder(
+              stream: Firestore.instance
+                  .collection('boardroom')
+                  .document(widget.boardID) //Change to stored boardID
+                  .collection('polls')
+                  .document(widget.document.documentID)//Change to stored pollID
+                  .collection('comments')
+                  .snapshots(),
+              builder: (context,  AsyncSnapshot snapshot){
+                if (!snapshot.hasData) {
+                  return Text("Loading...");
+                } else {
+                  print("[DEBUG] Has Data, Length: " +
+                      snapshot.data.documents.length.toString());
+                }
+                return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemExtent: 80,
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) => _commentBuilder(context, snapshot.data.documents[index]),
+                );
+              },
+            ),
+          ),
+          Form(
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    validator: (input) {
+                      if (input.isEmpty) {
+                        return 'Please Enter a comment before submitting';
+                      }
+                    },
+                    decoration: InputDecoration(labelText: 'Comment'),
+                    onSaved: (input) => _comment = input,
+                  ),
+                  RaisedButton(
+                    onPressed: commentOut,
+                    child: Text('Sign in'),
+                  ),
+                ],
+              )
+          ),
+        ]
+      ),
+    );
+  }
+}
+
+Widget _commentBuilder(context, DocumentSnapshot snapshot){
+
+return Card(
+    color: Colors.pink,
+    child: Column(children: <Widget>[
+        ListTile(
+          title: Text(snapshot["comment"],
+              style: new TextStyle(color: Colors.white)),
+          subtitle: Text(snapshot["userName"],
+              style: new TextStyle(color: Colors.white70)),
+        ),
+      ]
+    ),
+);
+}
+
+class Comments extends StatefulWidget {
+  const Comments({Key key, @required this.user, this.document, this.boardID})
+      : super(key: key);
+
+  final FirebaseUser user;
+  final DocumentSnapshot document;
+  final String boardID;
+  @override
+  _CommentState createState() => _CommentState();
+}
+
+void commentOut() async{
+  try{
+    await Firestore.instance
+        .collection('boardroom')
+        .document(widget.boardID) //Change to stored boardID
+        .collection('polls')
+        .document(widget.document.documentID)//Change to stored pollID
+        .collection('comments').document().setData({
+      'comment': "",
+      'userID': ""
+
+    });
+  }catch(error){
+    print("[DEBUG ERROR]" +error );
   }
 }
