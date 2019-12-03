@@ -118,11 +118,11 @@ class TabBarDemo extends StatelessWidget {
                 Tab(icon: Icon(Icons.add_comment)),
               ],
             ),
-            title: Text('Tabs Demo'),
+            title: Text('Replace with poll.name'),
           ),
           body: TabBarView(
             children: [
-              Icon(Icons.announcement),
+              votingForm(context),
               Icon(Icons.add_comment),
             ],
           ),
@@ -130,4 +130,11 @@ class TabBarDemo extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget votingForm(BuildContext context) {
+  return Scaffold(
+    body: Container(
+        padding: EdgeInsets.all(20.0), child: Text('coding test child data')),
+  );
 }

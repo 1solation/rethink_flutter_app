@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
                     .where('members', arrayContains: widget.user.uid)
                     .snapshots(),
                 builder: (context, AsyncSnapshot snapshot) {
-                  if (!snapshot.hasData) return const Text('Loading....');
+                  if (!snapshot.hasData) return LinearProgressIndicator();
                   return ListView.builder(
                     itemExtent: 80.0,
                     itemCount: snapshot.data.documents.length,
@@ -96,7 +96,7 @@ class _BoardroomState extends State<Boardroom> {
                 .snapshots(),
             builder: (context, AsyncSnapshot snapshot) {
               if (!snapshot.hasData) {
-                return Text("Loading...");
+                return LinearProgressIndicator();
               } else {
                 print("[DEBUG] Has Data, Length: " +
                     snapshot.data.documents.length.toString());
