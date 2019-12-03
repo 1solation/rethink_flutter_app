@@ -105,6 +105,9 @@ class TabBarDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+      ),
       home: DefaultTabController(
         length: 2,
         child: Scaffold(
