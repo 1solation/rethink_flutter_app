@@ -52,7 +52,6 @@ class _HomeState extends State<Home> {
                     .snapshots(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (!snapshot.hasData) return const Text('Loading....');
-
                   return ListView.builder(
                     itemExtent: 80.0,
                     itemCount: snapshot.data.documents.length,
@@ -79,10 +78,10 @@ class _BoardroomState extends State<Boardroom> {
 
   @override
   Widget build(BuildContext context) {
-    return _createList(context);
+    return _createPollList(context);
   }
 
-  Scaffold _createList(BuildContext context) {
+  Scaffold _createPollList(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.document['boardName']),
