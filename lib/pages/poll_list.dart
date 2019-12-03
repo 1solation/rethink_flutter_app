@@ -20,7 +20,7 @@ Widget buildPollList(context, DocumentSnapshot snapshot, FirebaseUser user) {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        new TabBarDemo(), // TODO: build navigation to new individual Poll
+                        new VotingTabView(), // TODO: build navigation to new individual Poll
                     // currently breaks on tap, use the BACK BUTTON on the emulator to navigate from the error
                   )); // Navigator.push
             }),

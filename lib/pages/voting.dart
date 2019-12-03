@@ -5,34 +5,14 @@ final dummySnapshot = [
   {"pollDesc": "do 1", "voteCount": 15},
   {"pollDesc": "do 2", "voteCount": 14},
   {"pollDesc": "do 3", "voteCount": 11},
-  {"pollDesc": "kill him", "voteCount": 10},
-  {"pollDesc": "chuck 'im out", "voteCount": 1},
+  {"pollDesc": "end 4", "voteCount": 10},
+  {"pollDesc": "out 5", "voteCount": 1},
 ];
 
-// // class VotingPage extends StatelessWidget {
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Scaffold(
-// //       appBar: AppBar(
-// //         title: Text('placehold me'),
-// //       ),
-// //       body: Center(
-// //         child: RaisedButton(
-// //           onPressed: () {
-// //             Navigator.pop(context);
-// //           },
-// //           child: Text('go back'),
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
-//Demo of just the tabs, how they work.
-class TabBarDemo extends StatelessWidget {
+class VotingTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
