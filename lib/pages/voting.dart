@@ -124,7 +124,7 @@ class TabBarDemo extends StatelessWidget {
                 Tab(icon: Icon(Icons.add_comment)),
               ],
             ),
-            title: Text('Tabs Demo'),
+            title: Text(document['pollName']),
           ),
           body: TabBarView(
             children: [
@@ -139,61 +139,81 @@ class TabBarDemo extends StatelessWidget {
 }
 
 class _CommentState extends State<Comments>{
-  String _comment;
+  final _text = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(20.0),
-            child: StreamBuilder(
-              stream: Firestore.instance
-                  .collection('boardroom')
-                  .document(widget.boardID) //Change to stored boardID
-                  .collection('polls')
-                  .document(widget.document.documentID)//Change to stored pollID
-                  .collection('comments')
-                  .snapshots(),
-              builder: (context,  AsyncSnapshot snapshot){
-                if (!snapshot.hasData) {
-                  return Text("Loading...");
-                } else {
-                  print("[DEBUG] Has Data, Length: " +
-                      snapshot.data.documents.length.toString());
-                }
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemExtent: 80,
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index) => _commentBuilder(context, snapshot.data.documents[index]),
-                );
-              },
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(20.0),
+              child: StreamBuilder(
+                stream: Firestore.instance
+                    .collection('boardroom')
+                    .document(widget.boardID) //Change to stored boardID
+                    .collection('polls')
+                    .document(widget.document.documentID)//Change to stored pollID
+                    .collection('comments')
+                    .snapshots(),
+                builder: (context,  AsyncSnapshot snapshot){
+                  if (!snapshot.hasData) {
+                    return Text("Loading...");
+                  } else {
+                    print("[DEBUG] Has Data, Length: " +
+                        snapshot.data.documents.length.toString());
+                  }
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (context, index) => _commentBuilder(context, snapshot.data.documents[index]),
+                  );
+                },
+              ),
             ),
-          ),
-          Form(
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    validator: (input) {
-                      if (input.isEmpty) {
-                        return 'Please Enter a comment before submitting';
-                      }
-                    },
-                    decoration: InputDecoration(labelText: 'Comment'),
-                    onSaved: (input) => _comment = input,
-                  ),
-                  RaisedButton(
-                    onPressed: commentOut,
-                    child: Text('Sign in'),
-                  ),
-                ],
-              )
-          ),
-        ]
+            Form(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextField(
+                        controller: _text,
+                        decoration: InputDecoration(labelText: 'Comment'),
+
+                      ),
+                    ),
+                    RaisedButton(
+                      onPressed: commentOut,
+                      child: Text('Comment'),
+                    ),
+                  ],
+                )
+            ),
+          ]
+        ),
       ),
     );
+  }
+  void commentOut() {
+      print(_text.text);
+      try{
+        Firestore.instance
+            .collection('boardroom')
+            .document(widget.boardID) //Change to stored boardID
+            .collection('polls')
+            .document(widget.document.documentID)//Change to stored pollID
+            .collection('comments').document().setData({
+          'comment': _text.text,
+          'userID': widget.user.uid,
+          'time': new DateTime.now(),
+
+        });
+      }catch(error){
+        print("[DEBUG ERROR]" +error );
+      }
+
+
   }
 }
 
@@ -205,7 +225,7 @@ return Card(
         ListTile(
           title: Text(snapshot["comment"],
               style: new TextStyle(color: Colors.white)),
-          subtitle: Text(snapshot["userName"],
+          subtitle: Text("User ID: " + snapshot["userID"],
               style: new TextStyle(color: Colors.white70)),
         ),
       ]
@@ -224,19 +244,3 @@ class Comments extends StatefulWidget {
   _CommentState createState() => _CommentState();
 }
 
-void commentOut() async{
-  try{
-    await Firestore.instance
-        .collection('boardroom')
-        .document(widget.boardID) //Change to stored boardID
-        .collection('polls')
-        .document(widget.document.documentID)//Change to stored pollID
-        .collection('comments').document().setData({
-      'comment': "",
-      'userID': ""
-
-    });
-  }catch(error){
-    print("[DEBUG ERROR]" +error );
-  }
-}
