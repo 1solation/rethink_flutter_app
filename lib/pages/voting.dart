@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 // final dummySnapshot = [
 //   {"pollDesc": "do 1", "voteCount": 15},
 //   {"pollDesc": "do 2", "voteCount": 14},
@@ -102,6 +102,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 //Demo of just the tabs, how they work.
 class TabBarDemo extends StatelessWidget {
+  const TabBarDemo({Key key, @required this.user, this.document, this.boardID})
+      : super(key: key);
+
+  final FirebaseUser user;
+  final DocumentSnapshot document;
+  final String boardID;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -118,12 +124,12 @@ class TabBarDemo extends StatelessWidget {
                 Tab(icon: Icon(Icons.add_comment)),
               ],
             ),
-            title: Text('Tabs Demo'),
+            title: Text(document['pollName']),
           ),
           body: TabBarView(
             children: [
               Icon(Icons.announcement),
-              Icon(Icons.add_comment),
+              Comments(user: user,document: document, boardID: boardID),
             ],
           ),
         ),
@@ -131,3 +137,110 @@ class TabBarDemo extends StatelessWidget {
     );
   }
 }
+
+class _CommentState extends State<Comments>{
+  final _text = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(20.0),
+              child: StreamBuilder(
+                stream: Firestore.instance
+                    .collection('boardroom')
+                    .document(widget.boardID) //Change to stored boardID
+                    .collection('polls')
+                    .document(widget.document.documentID)//Change to stored pollID
+                    .collection('comments')
+                    .snapshots(),
+                builder: (context,  AsyncSnapshot snapshot){
+                  if (!snapshot.hasData) {
+                    return Text("Loading...");
+                  } else {
+                    print("[DEBUG] Has Data, Length: " +
+                        snapshot.data.documents.length.toString());
+                  }
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.documents.length,
+                    itemBuilder: (context, index) => _commentBuilder(context, snapshot.data.documents[index]),
+                  );
+                },
+              ),
+            ),
+            Form(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextField(
+                        controller: _text,
+                        decoration: InputDecoration(labelText: 'Comment'),
+
+                      ),
+                    ),
+                    RaisedButton(
+                      onPressed: commentOut,
+                      child: Text('Comment'),
+                    ),
+                  ],
+                )
+            ),
+          ]
+        ),
+      ),
+    );
+  }
+  void commentOut() {
+      print(_text.text);
+      try{
+        Firestore.instance
+            .collection('boardroom')
+            .document(widget.boardID) //Change to stored boardID
+            .collection('polls')
+            .document(widget.document.documentID)//Change to stored pollID
+            .collection('comments').document().setData({
+          'comment': _text.text,
+          'userID': widget.user.uid,
+          'time': new DateTime.now(),
+
+        });
+      }catch(error){
+        print("[DEBUG ERROR]" +error );
+      }
+
+
+  }
+}
+
+Widget _commentBuilder(context, DocumentSnapshot snapshot){
+
+return Card(
+    color: Colors.pink,
+    child: Column(children: <Widget>[
+        ListTile(
+          title: Text(snapshot["comment"],
+              style: new TextStyle(color: Colors.white)),
+          subtitle: Text("User ID: " + snapshot["userID"],
+              style: new TextStyle(color: Colors.white70)),
+        ),
+      ]
+    ),
+);
+}
+
+class Comments extends StatefulWidget {
+  const Comments({Key key, @required this.user, this.document, this.boardID})
+      : super(key: key);
+
+  final FirebaseUser user;
+  final DocumentSnapshot document;
+  final String boardID;
+  @override
+  _CommentState createState() => _CommentState();
+}
+

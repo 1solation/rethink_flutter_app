@@ -106,7 +106,7 @@ class _BoardroomState extends State<Boardroom> {
                 itemExtent: 80.0,
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) => buildPollList(
-                    context, snapshot.data.documents[index], widget.user),
+                    context, snapshot.data.documents[index], widget.user, widget.document.documentID.toString()),
               );
             },
           ),
