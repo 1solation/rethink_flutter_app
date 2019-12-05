@@ -2,14 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final dummySnapshot = [
-  {"pollDesc": "do 1", "voteCount": 15},
-  {"pollDesc": "do 2", "voteCount": 14},
-  {"pollDesc": "do 3", "voteCount": 11},
-  {"pollDesc": "end 4", "voteCount": 10},
-  {"pollDesc": "out 5", "voteCount": 1},
-];
-
 class TabBarDemo extends StatelessWidget {
   const TabBarDemo({Key key, @required this.user, this.document, this.boardID})
       : super(key: key);
@@ -96,14 +88,23 @@ class _VotingState extends State<Voting> {
 }
 
 Widget _votingBuilder(context, DocumentSnapshot snapshot) {
+  //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
+  var pollOptionID = snapshot.documentID;
   return Card(
     color: Colors.pink,
     child: Column(children: <Widget>[
       ListTile(
         title: Text(snapshot["pollDesc"],
             style: new TextStyle(color: Colors.white)),
-        // subtitle: Text("User ID: " + snapshot["userID"],
-        //     style: new TextStyle(color: Colors.white70)),
+        onTap: () {
+          Firestore.instance.collection(pollOptionID);
+          snapshot.reference
+              .updateData({'voteCount': snapshot['voteCount'] + 1});
+          print('[DEBUG]: User is tapping a poll option with DocID: $pollOptionID and voteCount of: ' +
+              (snapshot['voteCount'] + 1)
+                  .toString()); // +1 added to voteCount data before turning to a string, as snapshot['voteCount'] returns data before the update, '+1' to offset this
+          //TODO: navigate to results.dart, page and nav to be done by Jamie
+        },
       ),
     ]),
   );
