@@ -12,6 +12,7 @@ class TabBarDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
@@ -91,7 +92,7 @@ Widget _votingBuilder(context, DocumentSnapshot snapshot) {
   //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
   var pollOptionID = snapshot.documentID;
   return Card(
-    color: Colors.pink,
+    color: Colors.pink[300],
     child: Column(children: <Widget>[
       ListTile(
         title: Text(snapshot["pollDesc"],
@@ -204,7 +205,7 @@ class _CommentState extends State<Comments> {
 
 Widget _commentBuilder(context, DocumentSnapshot snapshot) {
   return Card(
-    color: Colors.pink,
+    color: Colors.pink[300],
     child: Column(children: <Widget>[
       ListTile(
         title: Text(snapshot["comment"],

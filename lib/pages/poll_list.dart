@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rethink_flutter_app/pages/home.dart';
 import 'package:rethink_flutter_app/pages/voting.dart';
 
-Widget buildPollList(context, DocumentSnapshot snapshot, FirebaseUser user, String boardIDString) {
+Widget buildPollList(context, DocumentSnapshot snapshot, FirebaseUser user,
+    String boardIDString) {
   //TODO: Dynamic Styling
   return Card(
-      color: Colors.pink,
+      color: Colors.pink[300],
       child: Column(children: <Widget>[
         ListTile(
             leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
@@ -19,11 +20,13 @@ Widget buildPollList(context, DocumentSnapshot snapshot, FirebaseUser user, Stri
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                       new TabBarDemo(user: user,document: snapshot, boardID: boardIDString), // TODO: build navigation to new individual Poll
+                    builder: (context) => new TabBarDemo(
+                        user: user,
+                        document: snapshot,
+                        boardID:
+                            boardIDString), // TODO: build navigation to new individual Poll
                     // currently breaks on tap, use the BACK BUTTON on the emulator to navigate from the error
                   )); // Navigator.push
             }),
       ]));
 }
-

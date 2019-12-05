@@ -17,7 +17,7 @@ Widget _buildBoardroomList(
   //TODO: Dynamic Styling
 
   return Card(
-      color: Colors.pink,
+      color: Colors.pink[300],
       child: Column(children: <Widget>[
         ListTile(
             leading: Icon(Icons.local_hospital, size: 50, color: Colors.white),
