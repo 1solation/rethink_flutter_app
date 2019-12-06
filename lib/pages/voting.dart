@@ -34,7 +34,7 @@ class TabBarDemo extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              Voting(user: user, document: document, boardID: boardID),
+              Poll(user: user, document: document, boardID: boardID),
               Comments(user: user, document: document, boardID: boardID),
             ],
           ),
@@ -44,9 +44,30 @@ class TabBarDemo extends StatelessWidget {
   }
 }
 
-class _VotingState extends State<Voting> {
+class Poll extends StatefulWidget {
+  const Poll({Key key, @required this.user, this.document, this.boardID})
+      : super(key: key);
+
+  final FirebaseUser user;
+  final DocumentSnapshot document;
+  final String boardID;
+  @override
+  _PollState createState() => _PollState();
+}
+
+class _PollState extends State<Poll> {
+
+  bool _hasVoted = false;
+
+
   @override
   Widget build(BuildContext context) {
+
+    if(widget.document['votedUser'].contains(widget.user.uid)){
+      print('hell yeah');
+      _hasVoted = true;
+    }
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -76,12 +97,16 @@ class _VotingState extends State<Voting> {
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) => _votingBuilder(
-                          context,
-                          snapshot.data.documents[index],
-                          widget.boardID,
-                          widget.document.documentID,
-                          widget.user.uid),
+                      itemBuilder: (context, index) => _hasVoted?
+                      _resultBuilder(context, snapshot.data.documents[index])
+                          :
+                      _votingBuilder(
+                        context,
+                        snapshot.data.documents[index],
+                        widget.boardID,
+                        widget.document.documentID,
+                        widget.user.uid,
+                      ),
                     );
                   }),
             )
@@ -90,49 +115,59 @@ class _VotingState extends State<Voting> {
       ),
     );
   }
-}
 
-Widget _votingBuilder(context, DocumentSnapshot snapshot, String boardID,
-    String documentID, String userUID) {
-  //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
-  var pollOptionID = snapshot.documentID;
-  var newUserUID = [userUID];
-  return Card(
-    color: Colors.pink[300],
-    child: Column(children: <Widget>[
-      ListTile(
-        title: Text(snapshot["pollDesc"],
-            style: new TextStyle(color: Colors.white)),
-        onTap: () {
-          Firestore.instance.collection(pollOptionID);
-          snapshot.reference
-              .updateData({'voteCount': snapshot['voteCount'] + 1});
-          print('[DEBUG]: User is tapping a poll option with DocID: $pollOptionID and voteCount of: ' +
-              (snapshot['voteCount'] + 1)
-                  .toString()); // +1 added to voteCount data before turning to a string, as snapshot['voteCount'] returns data before the update, '+1' to offset this
-          print('xxxxx' + snapshot.toString());
-          Firestore.instance
-              .collection('boardroom')
-              .document(boardID)
-              .collection('polls')
-              .document(documentID)
-              .updateData({'votedUser': FieldValue.arrayUnion(newUserUID)});
-          //TODO: navigate to results.dart, page and nav to be done by Jamie
-        },
+  Widget _votingBuilder(context, DocumentSnapshot snapshot, String boardID, String documentID, String userUID) {
+    //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
+
+    var pollOptionID = snapshot.documentID;
+    var newUserUID = [userUID];
+
+    return Card(
+      color: Colors.pink[300],
+      child: Column(children: <Widget>[
+        ListTile(
+          title: Text(snapshot["pollDesc"],
+              style: new TextStyle(color: Colors.white)),
+          onTap: () {
+            Firestore.instance.collection(pollOptionID);
+            snapshot.reference
+                .updateData({'voteCount': snapshot['voteCount'] + 1});
+            print('[DEBUG]: User is tapping a poll option with DocID: $pollOptionID and voteCount of: ' +
+                (snapshot['voteCount'] + 1)
+                    .toString()); // +1 added to voteCount data before turning to a string, as snapshot['voteCount'] returns data before the update, '+1' to offset this
+            print('xxxxx' + snapshot.toString());
+            Firestore.instance
+                .collection('boardroom')
+                .document(boardID)
+                .collection('polls')
+                .document(documentID)
+                .updateData({'votedUser': FieldValue.arrayUnion(newUserUID)});
+                handleTap();
+          },
+        ),
+      ]),
+    );
+  }
+
+  Widget _resultBuilder(context, DocumentSnapshot snapshot){
+
+    return Card(
+      color: Colors.pink[300],
+      child: Column(children: <Widget>[
+        ListTile(
+          title: Text(snapshot["pollDesc"] + ": " + snapshot['voteCount'].toString(),
+              style: new TextStyle(color: Colors.white)),
+        ),
+      ]
       ),
-    ]),
-  );
-}
+    );
+  }
 
-class Voting extends StatefulWidget {
-  const Voting({Key key, @required this.user, this.document, this.boardID})
-      : super(key: key);
-
-  final FirebaseUser user;
-  final DocumentSnapshot document;
-  final String boardID;
-  @override
-  _VotingState createState() => _VotingState();
+  void handleTap() {
+    setState((){
+      _hasVoted = !_hasVoted;
+    });
+  }
 }
 
 class _CommentState extends State<Comments> {
