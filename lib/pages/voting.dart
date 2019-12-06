@@ -77,7 +77,11 @@ class _VotingState extends State<Voting> {
                       shrinkWrap: true,
                       itemCount: snapshot.data.documents.length,
                       itemBuilder: (context, index) => _votingBuilder(
-                          context, snapshot.data.documents[index]),
+                          context,
+                          snapshot.data.documents[index],
+                          widget.boardID,
+                          widget.document.documentID,
+                          widget.user.uid),
                     );
                   }),
             )
@@ -88,9 +92,11 @@ class _VotingState extends State<Voting> {
   }
 }
 
-Widget _votingBuilder(context, DocumentSnapshot snapshot) {
+Widget _votingBuilder(context, DocumentSnapshot snapshot, String boardID,
+    String documentID, String userUID) {
   //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
   var pollOptionID = snapshot.documentID;
+  var newUserUID = [userUID];
   return Card(
     color: Colors.pink[300],
     child: Column(children: <Widget>[
@@ -104,6 +110,13 @@ Widget _votingBuilder(context, DocumentSnapshot snapshot) {
           print('[DEBUG]: User is tapping a poll option with DocID: $pollOptionID and voteCount of: ' +
               (snapshot['voteCount'] + 1)
                   .toString()); // +1 added to voteCount data before turning to a string, as snapshot['voteCount'] returns data before the update, '+1' to offset this
+          print('xxxxx' + snapshot.toString());
+          Firestore.instance
+              .collection('boardroom')
+              .document(boardID)
+              .collection('polls')
+              .document(documentID)
+              .updateData({'votedUser': FieldValue.arrayUnion(newUserUID)});
           //TODO: navigate to results.dart, page and nav to be done by Jamie
         },
       ),
