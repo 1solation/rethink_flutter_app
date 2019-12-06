@@ -56,22 +56,18 @@ class Poll extends StatefulWidget {
 }
 
 class _PollState extends State<Poll> {
-
   bool _hasVoted = false;
-
-
   @override
   Widget build(BuildContext context) {
 
     if(widget.document['votedUser'].contains(widget.user.uid)){
-      print('hell yeah');
       _hasVoted = true;
     }
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Voting Panel'),
+        title: Text(_hasVoted ? 'Results Panel':'Voting Panel'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -135,7 +131,6 @@ class _PollState extends State<Poll> {
             print('[DEBUG]: User is tapping a poll option with DocID: $pollOptionID and voteCount of: ' +
                 (snapshot['voteCount'] + 1)
                     .toString()); // +1 added to voteCount data before turning to a string, as snapshot['voteCount'] returns data before the update, '+1' to offset this
-            print('xxxxx' + snapshot.toString());
             Firestore.instance
                 .collection('boardroom')
                 .document(boardID)
