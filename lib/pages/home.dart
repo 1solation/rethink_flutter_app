@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Home ${widget.user.email}'),
+          title: Text('Boardrooms'), // ${widget.user.email}'),
         ),
         body: Container(
             padding: EdgeInsets.all(20.0),
