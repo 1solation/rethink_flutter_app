@@ -59,15 +59,14 @@ class _PollState extends State<Poll> {
   bool _hasVoted = false;
   @override
   Widget build(BuildContext context) {
-
-    if(widget.document['votedUser'].contains(widget.user.uid)){
+    if (widget.document['votedUser'].contains(widget.user.uid)) {
       _hasVoted = true;
     }
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(_hasVoted ? 'Results Panel':'Voting Panel'),
+        title: Text(_hasVoted ? 'Results Panel' : 'Voting Panel'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -93,16 +92,16 @@ class _PollState extends State<Poll> {
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context, index) => _hasVoted?
-                      _resultBuilder(context, snapshot.data.documents[index])
-                          :
-                      _votingBuilder(
-                        context,
-                        snapshot.data.documents[index],
-                        widget.boardID,
-                        widget.document.documentID,
-                        widget.user.uid,
-                      ),
+                      itemBuilder: (context, index) => _hasVoted
+                          ? _resultBuilder(
+                              context, snapshot.data.documents[index])
+                          : _votingBuilder(
+                              context,
+                              snapshot.data.documents[index],
+                              widget.boardID,
+                              widget.document.documentID,
+                              widget.user.uid,
+                            ),
                     );
                   }),
             )
@@ -112,7 +111,8 @@ class _PollState extends State<Poll> {
     );
   }
 
-  Widget _votingBuilder(context, DocumentSnapshot snapshot, String boardID, String documentID, String userUID) {
+  Widget _votingBuilder(context, DocumentSnapshot snapshot, String boardID,
+      String documentID, String userUID) {
     //local doc ID for the poll option, enables debug statement access to pollOption.DocumentID
 
     var pollOptionID = snapshot.documentID;
@@ -137,29 +137,34 @@ class _PollState extends State<Poll> {
                 .collection('polls')
                 .document(documentID)
                 .updateData({'votedUser': FieldValue.arrayUnion(newUserUID)});
-                handleTap();
+            handleTap();
           },
         ),
       ]),
     );
   }
 
-  Widget _resultBuilder(context, DocumentSnapshot snapshot){
-
+  Widget _resultBuilder(context, DocumentSnapshot snapshot) {
     return Card(
       color: Colors.pink[300],
       child: Column(children: <Widget>[
         ListTile(
-          title: Text(snapshot["pollDesc"] + ": " + snapshot['voteCount'].toString(),
+          title: Text(snapshot["pollDesc"],
               style: new TextStyle(color: Colors.white)),
+          trailing: Text(
+            snapshot['voteCount'].toString(),
+            style: TextStyle(
+                color: Colors.grey[800],
+                fontWeight: FontWeight.bold,
+                fontSize: 35),
+          ),
         ),
-      ]
-      ),
+      ]),
     );
   }
 
   void handleTap() {
-    setState((){
+    setState(() {
       _hasVoted = !_hasVoted;
     });
   }
