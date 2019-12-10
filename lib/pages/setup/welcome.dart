@@ -17,9 +17,12 @@ class _WelcomePageState extends State<WelcomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          RaisedButton(
-            onPressed: navigateToSignIn,
-            child: Text('Sign in'),
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: RaisedButton(
+              onPressed: navigateToSignIn,
+              child: Text('Sign in'),
+            ),
           ),
         ],
       ),

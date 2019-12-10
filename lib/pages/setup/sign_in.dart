@@ -14,29 +14,38 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(),
+      appBar: AppBar(
+          title: Text('Login Page'),
+      ),
       body: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
-              TextFormField(
-                validator: (input) {
-                  if (input.isEmpty) {
-                    return 'Provide a valid email';
-                  }
-                },
-                decoration: InputDecoration(labelText: 'Email'),
-                onSaved: (input) => _email = input,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+
+                  validator: (input) {
+                    if (input.isEmpty) {
+                      return 'Provide a valid email';
+                    }
+                  },
+                  decoration: InputDecoration(labelText: 'Email'),
+                  onSaved: (input) => _email = input,
+                ),
               ),
-              TextFormField(
-                validator: (input) {
-                  if (input.length < 1) {
-                    return 'Provide a valid password';
-                  }
-                },
-                decoration: InputDecoration(labelText: 'Password'),
-                onSaved: (input) => _password = input,
-                obscureText: true,
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextFormField(
+                  validator: (input) {
+                    if (input.length < 1) {
+                      return 'Provide a valid password';
+                    }
+                  },
+                  decoration: InputDecoration(labelText: 'Password'),
+                  onSaved: (input) => _password = input,
+                  obscureText: true,
+                ),
               ),
               RaisedButton(
                 onPressed: signIn,
