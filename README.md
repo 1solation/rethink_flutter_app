@@ -11,7 +11,7 @@ Please see the presentation below which has mock designs, screenshots of the wor
 
 <object data="https://drive.google.com/file/d/1WuIvLdOMPGYe26SY11N5xx9yzLe4jzW4/view?usp=sharing" type="application/pdf" width="700px" height="700px">
     <embed src="https://drive.google.com/file/d/1WuIvLdOMPGYe26SY11N5xx9yzLe4jzW4/view?usp=sharing">
-        <p>This browser does not support PDFs. Please click the link to view the PDF: <a href="https://drive.google.com/file/d/1WuIvLdOMPGYe26SY11N5xx9yzLe4jzW4/view?usp=sharing">Download PDF</a>.</p>
+        <p>Please click the link to view the PDF: <a href="https://drive.google.com/file/d/1WuIvLdOMPGYe26SY11N5xx9yzLe4jzW4/view?usp=sharing">Download PDF</a>.</p>
     </embed>
 </object>
 
